@@ -3,4 +3,4 @@ Test-Repo für CPS Lab
 
 Repo wurde auf Hauptrechner geclont
 
-Test branch wurde angelegt
+main rdme version
