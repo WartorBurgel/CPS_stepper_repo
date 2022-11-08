@@ -30,8 +30,7 @@ class Server:
         while not self.exit:
             self.received_data = self.connected.recv(self.buffer_size)
             if self.received_data is not None:
-                print('Server empfängt: %s' % self.received_data)
-                print('Type message:')
+                print('Server empfängt: Schrittfrequenz %s' % self.received_data + 'ms')
 
     def server_transmitter(self):
         while not self.exit:
@@ -42,11 +41,15 @@ class Server:
                     self.data_send = input_message
                     self.connected.send(self.data_send.encode())
                     self.stop_connection()
-                else:
+                elif input_message == 'ok':
+                    self.data_send = input_message
+                    self.data_send = str(self.data_send)
+                    self.connected.send(self.data_send.encode())
+                '''elif input_message == (int) & ((input_message < 1500)&(input_message>0)):
                     self.data_send = input_message
                     self.data_send = 'Server ' + str(self.data_send)
                     self.connected.send(self.data_send.encode())
-
+                '''
     def stop_connection(self):
         self.exit = True
         self.server_connection.close()
