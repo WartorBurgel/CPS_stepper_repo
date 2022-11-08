@@ -11,6 +11,7 @@ class Server:
         self.data_send = None
         self.input_message = None
         self.exit = False
+        self.i = 1
 
         self.server_connection = socket(AF_INET, SOCK_STREAM)
         self.server_connection.bind(('', self.server_port))
@@ -30,11 +31,13 @@ class Server:
         while not self.exit:
             self.received_data = self.connected.recv(self.buffer_size)
             if self.received_data is not None:
-                print('Server empfängt: Schrittfrequenz %s' % self.received_data + 'ms')
+                print('Server empfängt: Schrittfrequenz %s' % self.received_data)
 
     def server_transmitter(self):
         while not self.exit:
-            print('Type ok to start Motor or type a number between 1 - 1500:')
+            if self.i == 1:
+                print('Type ok to start Motor or type a number between 1 - 1500:')
+                self.i -= 1
             if input is not None:
                 input_message = input()
                 if input_message == 'exit':
@@ -45,11 +48,11 @@ class Server:
                     self.data_send = input_message
                     self.data_send = str(self.data_send)
                     self.connected.send(self.data_send.encode())
-                '''elif input_message == (int) & ((input_message < 1500)&(input_message>0)):
+                elif input_message.strip().isdigit():
                     self.data_send = input_message
-                    self.data_send = 'Server ' + str(self.data_send)
+                    self.data_send = str(self.data_send)
                     self.connected.send(self.data_send.encode())
-                '''
+
     def stop_connection(self):
         self.exit = True
         self.server_connection.close()
