@@ -15,6 +15,7 @@ class Client:
         self.input_message = None
         self.exit = False
         self.i = 1
+        self.freqspeicher = 0
 
         self.client_connection = socket(AF_INET, SOCK_STREAM)
         self.client_connection.connect((self.host, self.server_port))
@@ -34,9 +35,18 @@ class Client:
                     self.stop_connection()
                 elif input_message.decode() == 'ok':
                     # motor.set_stepper_delay(input_message.decode())
-                    print('Neue Schrittfrequenz %s' % self.received_data)
-                    self.i = 1
+                    print('Motor dreht')
+                    input_message = 'Motor dreht mit Schrittfrequenz' + str(self.freqspeicher)
+                    self.data_send = input_message
+                    self.data_send = str(self.data_send)
+                    self.client_connection.send(self.data_send.encode())
 
+                elif input_message.decode().strip().isdigit():
+                    print('Neue Frequenz' + str(input_message))
+                    self.data_send = input_message
+                    self.freqspeicher = input_message
+                    self.data_send = str(self.data_send)
+                    self.client_connection.send(self.data_send.encode())
 
     def client_transmitter(self):
         while not self.exit:
