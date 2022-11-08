@@ -28,10 +28,11 @@ class Client:
             if self.received_data is not None:
                 input_message = self.received_data
                 if input_message.decode() == 'exit':
-                    print('Server hat die Verbindung geschlossen')
+                    print('Server hat die Verbindung geschlossen.')
                     self.stop_connection()
-                else:
-                    print('Client empfängt: %s' % self.received_data)
+                elif input_message.decode() == int:
+                    # motor.set_stepper_delay(input_message.decode())
+                    print('Neue Schrittfrequenz %s' % self.received_data)
 
     def client_transmitter(self):
         while not self.exit:
@@ -49,6 +50,6 @@ class Client:
 
 
 client1 = Client()
-pi = pigpio.pi()
-motor = StepperMotor(pi, steppins, fullstepsequence)
-motor.set_stepper_delay(900)
+# pi = pigpio.pi()
+# motor = StepperMotor(pi, steppins, fullstepsequence)
+# motor.set_stepper_delay(900)

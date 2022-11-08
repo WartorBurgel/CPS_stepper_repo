@@ -35,7 +35,7 @@ class Server:
 
     def server_transmitter(self):
         while not self.exit:
-            print('Type message: ')
+            print('Type ok to start Motor or type a number between 1 - 1500:')
             if input is not None:
                 input_message = input()
                 if input_message == 'exit':
