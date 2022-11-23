@@ -1,6 +1,11 @@
+import sys
 from socket import *
 import threading
-#from stepper import *
+
+from time import sleep
+from os import system
+import pigpio
+from stepper_motor import MyStepperMotor
 
 
 class Client:
@@ -15,7 +20,7 @@ class Client:
         self.input_message = None
         self.exit = False
         self.i = 1
-        self.freqspeicher = 0
+        self.step_freq = 0.00001
 
         self.client_connection = socket(AF_INET, SOCK_STREAM)
         self.client_connection.connect((self.host, self.server_port))
@@ -33,25 +38,27 @@ class Client:
                 if input_message.decode() == 'exit':
                     print('Server hat die Verbindung geschlossen.')
                     self.stop_connection()
+                    sys.exit()
                 elif input_message.decode() == 'ok':
-                    # motor.set_stepper_delay(input_message.decode())
                     print('Motor dreht')
-                    input_message = 'Motor dreht mit Schrittfrequenz' + str(self.freqspeicher)
+                    input_message = 'Motor dreht mit Schrittfrequenz' + str(self.step_freq)
+
                     self.data_send = input_message
                     self.data_send = str(self.data_send)
                     self.client_connection.send(self.data_send.encode())
 
                 elif input_message.decode().strip().isdigit():
                     print('Neue Frequenz' + str(input_message))
+                    self.step_freq = input_message
                     self.data_send = input_message
-                    self.freqspeicher = input_message
+                    self.step_freq = input_message
                     self.data_send = str(self.data_send)
                     self.client_connection.send(self.data_send.encode())
 
     def client_transmitter(self):
         while not self.exit:
             if self.i == 1:
-                input_message = '950' #str(motor.set_stepper_delay)
+                input_message = self.step_freq
                 self.data_send = input_message
                 self.data_send = str(self.data_send)
                 self.client_connection.send(self.data_send.encode())
@@ -64,7 +71,17 @@ class Client:
         print('Client hat die Verbindung beendet')
 
 
+
+system('sudo systemctl disable pigpiod')
+sleep(0.5)
+system('sudo systemctl start pigpiod')
+pi = pigpio.pi()
+
+motor = MyStepperMotor(pi)
+
 client1 = Client()
-# pi = pigpio.pi()
-# motor = StepperMotor(pi, steppins, fullstepsequence)
-# motor.set_stepper_delay(900)
+
+while not client1.exit:
+    motor.set_stepper_delay(client1.step_freq)
+    motor.do_clockwise_step()
+

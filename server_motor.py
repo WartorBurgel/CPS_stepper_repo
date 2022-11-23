@@ -1,3 +1,4 @@
+import sys
 from socket import *
 import threading
 
@@ -11,6 +12,7 @@ class Server:
         self.data_send = None
         self.input_message = None
         self.exit = False
+        self.step_freq = 0.000001
         self.i = 1
 
         self.server_connection = socket(AF_INET, SOCK_STREAM)
@@ -20,8 +22,10 @@ class Server:
         print('Hostname ', gethostname())
         print('IP Nummer: ', gethostbyname(gethostname()))
         print('Listening on Port ' + str(self.server_port))
+
         self.connected, (self.remotehost, self.remoteport) = self.server_connection.accept()
         print('Verbunden mit %s:%s' % (self.remotehost, self.remoteport))
+
         self.receive_thread = threading.Thread(target=self.server_receiver)
         self.transmit_thread = threading.Thread(target=self.server_transmitter)
         self.receive_thread.start()
@@ -58,6 +62,7 @@ class Server:
         self.server_connection.close()
         self.receive_thread.join()
         print('Server-Verbindung wurde beendet')
+        sys.exit()
 
 
 server = Server()
